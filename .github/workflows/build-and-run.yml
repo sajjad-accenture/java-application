@@ -1,11 +1,12 @@
-name: Build and Run Java Application
+name: Build and Run Java Application in Docker
+
 on:
   push:
     branches:
       - main
 
 jobs:
-  build-and-run:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,10 +23,30 @@ jobs:
       run: mvn package
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v2
       with:
         name: build-artifact
         path: target/helloworld-1.0-SNAPSHOT.jar
 
-    - name: Run Application
-      run: java -cp target/helloworld-1.0-SNAPSHOT.jar com.example.App
+  run:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: build-artifact
+        path: target/
+
+    - name: List target directory
+      run: ls -la target
+
+    - name: Build Docker image
+      run: docker build -t helloworld-app .
+
+    - name: Run Docker container
+      run: docker run --name helloworld-container helloworld-app
