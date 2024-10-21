@@ -27,6 +27,8 @@ jobs:
       with:
         name: build-artifact
         path: target/helloworld-1.0-SNAPSHOT.jar
+    - name: Run Application
+      run: java -cp target/helloworld-1.0-SNAPSHOT.jar com.example.App
 
   run:
     runs-on: ubuntu-latest
